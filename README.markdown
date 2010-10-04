@@ -8,6 +8,7 @@ ePubファイルのPodcast配信をするための実験サーバです。
 ## Usage
 
     java -jar epubcast-0.0.1-alpha-standalone.jar
+    (or lein uberjar, then stand up server)
     
 open http://localhost:8080/
 regist Podcast address "http://localhost:8080/epub" on iTunes.
@@ -21,7 +22,7 @@ FIXME: write
 * fixed garbled characters in Podcast feeds
 * be able to publishing every epub file(susu.epub only, now)
   -> beccause must be including epub file size in podcast feed(hard coding now)
-* change to run on Google AppEngine/Java
+* be able to deploy on Google AppEngine/Java
 
 ## License
 
