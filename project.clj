@@ -1,5 +1,6 @@
-(defproject epubcast "1.0.0-SNAPSHOT"
-  :description "FIXME: write"
+(defproject epubcast "0.0.1-alpha"
+  :description "server to do tech experiment for ePub publishing on Podcast."
+  :main epubcast.core
   :dependencies [[org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]
                  [compojure "0.4.1"]
