@@ -56,7 +56,8 @@
                [:itunes:category {:text "TV &amp; Film"}]
                
                [:item
-                [:title "Susu for ePubcast"]
+                [:title "スウスウと砂漠と運び屋 on podcast"]
+;                [:title "Susu for ePubcast"]
                 [:itunes:author "deltam"]
                 [:itunes:subtitle "little story in desert"]
                 [:itunes:summary "昔書いたラノベ処女作をさらす"]
@@ -64,19 +65,6 @@
                              :length "100549"
                              :type "application/epub+zip"}]
                 [:guid "http://localhost:8080/file/susu_plain.epub"]
-                [:pubDate "Mon, 4 Oct 2010 19:00:00 GMT"]
-                [:itunes:duration "7:04"]
-                [:itunes:keywords "salt, pepper, shaker, exciting"]]
-
-               [:item
-                [:title "スウスウと砂漠と運び屋 on podcast"]
-                [:itunes:author "deltam"]
-                [:itunes:subtitle "little story in desert"]
-                [:itunes:summary "昔書いたラノベ処女作をさらす"]
-                [:enclosure {:url "http://localhost:8080/file/susu2.epub"
-                             :length "101041"
-                             :type "application/epub+zip"}]
-                [:guid "http://localhost:8080/file/susu2.epub"]
                 [:pubDate "Mon, 4 Oct 2010 19:00:00 GMT"]
                 [:itunes:duration "7:04"]
                 [:itunes:keywords "salt, pepper, shaker, exciting"]]
