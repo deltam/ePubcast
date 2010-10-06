@@ -3,13 +3,14 @@
   (:use [compojure.core]
         [hiccup.core]
         [hiccup.form-helpers]
-        [ring.middleware [session :only (wrap-session)]
+        [ring.middleware
+         [session :only (wrap-session)]
          [file :only (wrap-file)]]
         [ring.adapter jetty]
         [ring.util.response :only (file-response)]
         [ring.middleware params stacktrace file file-info session]
-        [clojure.contrib.duck-streams :only (reader writer)]
-        [clojure.contrib.seq-utils :only (rand-elt)]))
+        [clojure.contrib.io :only (reader writer)]
+        [clojure.contrib.seq :only (rand-elt)]))
   
 (defn html-doc [id body]
   (html [:h1 "ePubcast"]
@@ -98,6 +99,19 @@
   (ANY "*" []
        {:status 404, :body "<h1>Page not found</h1>"}))
 
+; temporary solution
+; http://groups.google.com/group/compojure/browse_thread/thread/44a25e10c37f3b1b/d4a17cb99f84814f?pli=1
+(defn wrap-charset [handler charset] 
+  (fn [request] 
+    (if-let [response (handler request)] 
+      (if-let [content-type (get-in response [:headers "Content-Type"])] 
+        (if (.contains content-type "charset") 
+          response 
+          (assoc-in response 
+            [:headers "Content-Type"] 
+            (str content-type "; charset=" charset))) 
+        response)))) 
+(wrap! main-routes (:charset "utf8"))
 
 (defn -main [& args]
   (run-jetty main-routes {:port 8080}))
