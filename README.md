@@ -24,8 +24,6 @@ regist Podcast address "http://localhost:8080/epub" on iTunes.
 FIXME: write
 
 ## TODO
-* fixed non-transfered iPod touch on iTunes
-* fixed garbled characters in Podcast feeds
 * be able to publishing every epub file(susu.epub only, now)
 
   -> beccause must be including epub file size in podcast feed(hard coding now)
