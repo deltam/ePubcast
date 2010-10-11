@@ -1,4 +1,5 @@
 (ns epubcast.core
+  "experiment server for publishing ePub on Podcast RSS."
   (:gen-class)
   (:use [compojure.core]
         [hiccup.core]
@@ -11,29 +12,28 @@
         [ring.middleware params stacktrace file file-info session]
         [clojure.contrib.io :only (reader writer)]
         [clojure.contrib.seq :only (rand-elt)]))
-  
-(defn html-doc [id body]
+
+
+(defn main-html
+  "assembling stub html"
+  []
   (html [:h1 "ePubcast"]
         [:div {:align "right"}
          [:a {:href "/epub"} "epub feeds "]
          [:a {:href "/file/susu.epub"} "susu.epub"]]
         [:div {:align "left"}
          [:blockquote {:style "border-style:solid"}
-          body
+          "test"
           [:br]
-          [:a {:href (str "/entry/" id)} "Permalink"]]]))
+          ]]))
 
-(defn main-body [entry]
-  (let [text (entry :text)]
-    (html-doc (entry :id)
-              (html [:pre (entry :text)]))))
-
-(defn cdata [text]
-  (str "<![CDATA[" text "]]>"))
 
 (defroutes main-routes
+  "routing main page, podcast rss, static file link."
+  ; defaultで表示するHTML
   (GET "/" []
-       (main-body {:id "010" :text "epubcast"}))
+       (main-html))
+  ; Podcast RSSを返す
   (GET "/epub" []
        (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
             (html
@@ -82,10 +82,12 @@
                 [:itunes:duration "7:04"]
                 [:itunes:keywords "salt, pepper, shaker, exciting"]]
                ]])))
+  ; 静的ファイルをstaticフォルダから探して返す
   (GET ["/file/:filename" :filename #".*"] [filename]
        (file-response filename {:root "./static"}))
   (ANY "*" []
        {:status 404, :body "<h1>Page not found</h1>"}))
+
 
 ; temporary solution
 ; http://groups.google.com/group/compojure/browse_thread/thread/44a25e10c37f3b1b/d4a17cb99f84814f?pli=1
@@ -101,5 +103,8 @@
         response)))) 
 (wrap! main-routes (:charset "utf8"))
 
-(defn -main [& args]
+
+(defn -main
+  "run jetty with port 8080"
+  [& args]
   (run-jetty main-routes {:port 8080}))
