@@ -1,7 +1,10 @@
 (ns epubcast.core
   "experiment server for publishing ePub on Podcast RSS."
   (:gen-class)
-  (:use [compojure.core]
+  (:use [clojure.java.io :only (file)]
+        [clojure.contrib.io :only (reader writer)]
+        [clojure.contrib.seq :only (rand-elt)]
+        [compojure.core]
         [hiccup.core]
         [hiccup.form-helpers]
         [ring.middleware
@@ -9,9 +12,14 @@
          [file :only (wrap-file)]]
         [ring.adapter jetty]
         [ring.util.response :only (file-response)]
-        [ring.middleware params stacktrace file file-info session]
-        [clojure.contrib.io :only (reader writer)]
-        [clojure.contrib.seq :only (rand-elt)]))
+        [ring.middleware params stacktrace file file-info session]))
+
+
+(defn static-files
+  []
+  (let [epub-seq (seq (. (file "./static") listFiles))]
+    (for [ep epub-seq]
+      {:name (. ep getName) :length (. ep length)})))
 
 
 (defn main-html
@@ -19,13 +27,67 @@
   []
   (html [:h1 "ePubcast"]
         [:div {:align "right"}
-         [:a {:href "/epub"} "epub feeds "]
-         [:a {:href "/file/susu.epub"} "susu.epub"]]
+         [:a {:href "/epub"} "epub feeds"]]
         [:div {:align "left"}
          [:blockquote {:style "border-style:solid"}
-          "test"
-          [:br]
-          ]]))
+;          [:p
+;           [:a {:href "/file/susu.epub"} "susu.epub"]]
+          (for [ep (static-files)]
+            [:p
+             [:a {:href (str "file/" (:name ep))} (:name ep)]])]]))
+
+
+(defn epub-rss
+  "./staticに入っているファイルを返すためのPodcastRSSを返す"
+  []
+  (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+       (html
+        [:rss {:xmlns:itunes "http://www.itunes.com/dtds/podcast-1.0.dtd" :version "2.0"}
+         [:channel
+          [:title "ePubcast exp"]
+          [:link "http://www.example.com/podcasts/everything/index.html"]
+          [:language "ja"]
+;               [:copyright "&#x2117; &amp; &#xA9; 2005 John Doe &amp; Family"]
+          [:itunes:subtitle "ePubをPodcastで配信するサーバの実験"]
+          [:itunes:author "deltam"]
+          [:itunes:summary "実験中デース"]
+          [:description "実験実験！！！"]
+          [:itunes:owner
+           [:itunes:name "deltam the YutoLisper"]
+           [:itunes:email "deltam@gmail.com"]]
+;               [:itunes:image {:href "http://example.com/podcasts/everything/AllAboutEverything.jpg"}]
+          [:itunes:category {:text "Technology"}
+           [:itunes:category {:text "Gadgets"}]]
+          [:itunes:category {:text "TV &amp; Film"}]
+
+          ;; items
+          [:item
+           [:title "スウスウと砂漠と運び屋 on podcast"]
+;                [:title "Susu for ePubcast"]
+           [:itunes:author "deltam"]
+           [:itunes:subtitle "little story in desert"]
+           [:itunes:summary "昔書いたラノベ処女作をさらす"]
+           [:enclosure {:url "http://localhost:8080/file/susu_plain.epub"
+                        :length "100549"
+                        :type "application/epub+zip"}]
+           [:guid "http://localhost:8080/file/susu_plain.epub"]
+           [:pubDate "Mon, 4 Oct 2010 19:00:00 GMT"]
+           [:itunes:duration "7:04"]
+           [:itunes:keywords "salt, pepper, shaker, exciting"]]
+
+          [:item
+           [:title "SuSu"]
+           [:itunes:author "deltam"]
+           [:itunes:subtitle "little story in desert"]
+           [:itunes:summary "昔書いたラノベ処女作をさらす"]
+           [:enclosure {:url "http://localhost:8080/file/susu.epub"
+                        :length "89427"
+                        :type "application/epub+zip"}]
+           [:guid "http://localhost:8080/file/susu.epub"]
+           [:pubDate "Wed, 15 Jun 2005 19:00:00 GMT"]
+           [:itunes:duration "7:04"]
+           [:itunes:keywords "salt, pepper, shaker, exciting"]]
+          ]])))
 
 
 (defroutes main-routes
@@ -35,53 +97,7 @@
        (main-html))
   ; Podcast RSSを返す
   (GET "/epub" []
-       (str "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
-            (html
-             [:rss {:xmlns:itunes "http://www.itunes.com/dtds/podcast-1.0.dtd" :version "2.0"}
-              [:channel
-               [:title "ePubcast exp"]
-               [:link "http://www.example.com/podcasts/everything/index.html"]
-               [:language "ja"]
-;               [:copyright "&#x2117; &amp; &#xA9; 2005 John Doe &amp; Family"]
-               [:itunes:subtitle "ePubをPodcastで配信するサーバの実験"]
-               [:itunes:author "deltam"]
-               [:itunes:summary "実験中デース"]
-               [:description "実験実験！！！"]
-               [:itunes:owner
-                [:itunes:name "deltam the YutoLisper"]
-                [:itunes:email "deltam@gmail.com"]]
-;               [:itunes:image {:href "http://example.com/podcasts/everything/AllAboutEverything.jpg"}]
-               [:itunes:category {:text "Technology"}
-                [:itunes:category {:text "Gadgets"}]]
-               [:itunes:category {:text "TV &amp; Film"}]
-               
-               [:item
-                [:title "スウスウと砂漠と運び屋 on podcast"]
-;                [:title "Susu for ePubcast"]
-                [:itunes:author "deltam"]
-                [:itunes:subtitle "little story in desert"]
-                [:itunes:summary "昔書いたラノベ処女作をさらす"]
-                [:enclosure {:url "http://localhost:8080/file/susu_plain.epub"
-                             :length "100549"
-                             :type "application/epub+zip"}]
-                [:guid "http://localhost:8080/file/susu_plain.epub"]
-                [:pubDate "Mon, 4 Oct 2010 19:00:00 GMT"]
-                [:itunes:duration "7:04"]
-                [:itunes:keywords "salt, pepper, shaker, exciting"]]
-
-               [:item
-                [:title "SuSu"]
-                [:itunes:author "deltam"]
-                [:itunes:subtitle "little story in desert"]
-                [:itunes:summary "昔書いたラノベ処女作をさらす"]
-                [:enclosure {:url "http://localhost:8080/file/susu.epub"
-                             :length "89427"
-                             :type "application/epub+zip"}]
-                [:guid "http://localhost:8080/file/susu.epub"]
-                [:pubDate "Wed, 15 Jun 2005 19:00:00 GMT"]
-                [:itunes:duration "7:04"]
-                [:itunes:keywords "salt, pepper, shaker, exciting"]]
-               ]])))
+       (epub-rss))
   ; 静的ファイルをstaticフォルダから探して返す
   (GET ["/file/:filename" :filename #".*"] [filename]
        (file-response filename {:root "./static"}))
