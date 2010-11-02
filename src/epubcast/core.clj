@@ -16,6 +16,7 @@
 
 
 (defn static-files
+  "./static 内のファイルの名前、サイズのMapシーケンスを返す"
   []
   (let [epub-seq (seq (. (file "./static") listFiles))]
     (for [ep epub-seq]
@@ -27,11 +28,11 @@
   []
   (html [:h1 "ePubcast"]
         [:div {:align "right"}
-         [:a {:href "/epub"} "epub feeds"]]
+         [:a {:href "/epub"} "epub feeds"]
+         [:a {:href "itpc://localhost:8080/epub"} "[add iTunes]"]]
         [:div {:align "left"}
          [:blockquote {:style "border-style:solid"}
-;          [:p
-;           [:a {:href "/file/susu.epub"} "susu.epub"]]
+          [:p "list of ./static"]
           (for [ep (static-files)]
             [:p
              [:a {:href (str "file/" (:name ep))} (:name ep)]])]]))
@@ -53,40 +54,28 @@
           [:itunes:summary "実験中デース"]
           [:description "実験実験！！！"]
           [:itunes:owner
-           [:itunes:name "deltam the YutoLisper"]
-           [:itunes:email "deltam@gmail.com"]]
+           [:itunes:name "test"]
+           [:itunes:email "test"]]
 ;               [:itunes:image {:href "http://example.com/podcasts/everything/AllAboutEverything.jpg"}]
           [:itunes:category {:text "Technology"}
            [:itunes:category {:text "Gadgets"}]]
           [:itunes:category {:text "TV &amp; Film"}]
 
           ;; items
-          [:item
-           [:title "スウスウと砂漠と運び屋 on podcast"]
-;                [:title "Susu for ePubcast"]
-           [:itunes:author "deltam"]
-           [:itunes:subtitle "little story in desert"]
-           [:itunes:summary "昔書いたラノベ処女作をさらす"]
-           [:enclosure {:url "http://localhost:8080/file/susu_plain.epub"
-                        :length "100549"
-                        :type "application/epub+zip"}]
-           [:guid "http://localhost:8080/file/susu_plain.epub"]
-           [:pubDate "Mon, 4 Oct 2010 19:00:00 GMT"]
-           [:itunes:duration "7:04"]
-           [:itunes:keywords "salt, pepper, shaker, exciting"]]
-
-          [:item
-           [:title "SuSu"]
-           [:itunes:author "deltam"]
-           [:itunes:subtitle "little story in desert"]
-           [:itunes:summary "昔書いたラノベ処女作をさらす"]
-           [:enclosure {:url "http://localhost:8080/file/susu.epub"
-                        :length "89427"
-                        :type "application/epub+zip"}]
-           [:guid "http://localhost:8080/file/susu.epub"]
-           [:pubDate "Wed, 15 Jun 2005 19:00:00 GMT"]
-           [:itunes:duration "7:04"]
-           [:itunes:keywords "salt, pepper, shaker, exciting"]]
+          (for [ep (static-files)]
+            (let [fullpath (str "http://localhost:8080/file/" (:name ep))]
+              [:item
+               [:title (:name ep)]
+               [:itunes:author "Nobody"]
+               [:itunes:subtitle "./static"
+                [:itunes:summary "./static"]
+                [:enclosure {:url fullpath
+                             :length (str (:length ep))
+                             :type "application/epub+zip"}]
+                [:guid fullpath]
+                [:pubDate "Mon, 4 Oct 2010 19:00:00 GMT"]
+                [:itunes:duration "7:04"]
+                [:itunes:keywords "test"]]]))
           ]])))
 
 
