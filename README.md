@@ -4,19 +4,27 @@ server to do tech experiment for ePub publishing on Podcast.
 
 this program is under construction.
 
+standing server as local.
+
+publishing Podcast RSS, EPUBs from ./static folder.
+
+
 ePubファイルのPodcast配信をするための実験サーバです。
 
-いろいろ工事中
+ローカルでサーバを立ち上げ、staticフォルダに入っているEPUBファイルをPodcastRSSで配信します
 
 
 ## Usage
 
-    java -jar epubcast-0.0.1-alpha-standalone.jar
-    (or lein uberjar, then stand up server)
+    $ mkdir static
+    $ cp YOUR.epub ./static
+    $ java -jar epubcast-0.0.1-alpha-standalone.jar
     
 open http://localhost:8080/
 
-regist Podcast address "http://localhost:8080/epub" on iTunes.
+regist Podcast address "http://localhost:8080/epub" on iTunes,
+
+or click [added iTunes] link.
 
 
 ## Installation
@@ -24,9 +32,6 @@ regist Podcast address "http://localhost:8080/epub" on iTunes.
 FIXME: write
 
 ## TODO
-* be able to publishing every epub file(susu.epub only, now)
-
-  -> beccause must be including epub file size in podcast feed(hard coding now)
 * be able to deploy on Google AppEngine/Java
 
 

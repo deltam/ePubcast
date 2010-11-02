@@ -1,4 +1,4 @@
-(defproject epubcast "0.0.1-alpha"
+(defproject epubcast "0.0.2-alpha"
   :description "server to do tech experiment for ePub publishing on Podcast."
   :main epubcast.core
   :dependencies [[org.clojure/clojure "1.2.0"]
